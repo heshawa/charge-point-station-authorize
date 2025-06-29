@@ -24,21 +24,19 @@ class StationAuthorizationServiceImpl(
     override suspend fun processMessagesFromKafkaAsync(message: ServiceRequestContext): Job {
         //TODO: Update received message in DB
         return coroutineScope.launch { 
-            //TODO: Catch possible errors
-            //TODO: Categorize errors(Worth re-trying or constant errors)
-            //TODO: Send request to callback url when processing complete
-            //TODO: publish to dead letter queue when max retry attempts reached
             var lastException : Exception? = message.lastError
 
             while (message.lastRetryAttempt < safetyAttemptCount) { // Safety limit
-                message.lastRetryAttempt.inc() //Update retry attempt number
+                message.lastRetryAttempt = message.lastRetryAttempt.inc() //Update retry attempt number
 
                 try {
                     // Process the message
                     processMessage(message);
                     log.info("Message successfully processed. Correlation Id: ${message.requestCorrelationId}")
                     //TODO: Update DB that processed successfully
-                } catch (exception : Exception) {
+                    //TODO: Send request to callback url when processing complete
+                    return@launch
+                } catch (exception : Exception) { //Catch errors
                     lastException = exception;
 
                     // Check if we should retry

@@ -18,9 +18,14 @@ class ServiceRequestTopicConsumer(
     var log = LoggerFactory.getLogger(ServiceRequestTopicConsumer::class.java)
 
     @KafkaListener(topics = ["#{__listener.consumerTopicName}"], groupId = "#{__listener.consumerGroupId}")
-    fun readTopicMessages(message : ServiceRequestContext){
+    suspend fun readTopicMessages(message : ServiceRequestContext){
         log.info("Message received from topic. Message Id: ${message.requestCorrelationId}")
-        stationAuthorizationService.processMessagesFromKafka(message)
+        try {
+            stationAuthorizationService.processMessagesFromKafkaAsync(message)
+        }catch (exception : Exception){
+            //TODO: publish to dead letter queue when max retry attempts reached
+        }
+        //TODO Send acknowledgement
     }
  
     

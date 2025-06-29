@@ -15,6 +15,7 @@ class ExponentialBackoffRetryStrategyImpl(private val retryConfig: RetryConfig,
         if(attemptCount >= retryConfig.maxAttempts){}
         attemptCount.takeIf { it >= retryConfig.maxAttempts}?.let { return false }
 
+        //Categorize errors(Worth re-trying or constant errors)
         val errorType = exception?.let { stationConsumerExceptionClassifier.classifyException(it) }
 
         // Not retrying permanent errors
