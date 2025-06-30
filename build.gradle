@@ -42,6 +42,10 @@ dependencies {
 
 	//Add kotlin date time controls
 	implementation 'org.jetbrains.kotlinx:kotlinx-datetime:0.4.1'
+	
+	//Add external API Calling
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
+
 
 	implementation("org.springframework.kafka:spring-kafka")
 	implementation("org.springframework.boot:spring-boot-configuration-processor")

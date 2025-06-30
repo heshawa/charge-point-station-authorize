@@ -9,3 +9,7 @@ data class CallbackRequestBody(
     val stationId : String,
     val status : String
 )
+
+data class CallbackResponseBody(
+    val success : Boolean
+)
