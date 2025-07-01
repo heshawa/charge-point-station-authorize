@@ -47,15 +47,19 @@ class ServiceRequestTopicConsumer(
                                 ?: ChargingApprovalStatus.INVALID
 
                         //Send request to callback url when processing complete
-                        stationAuthorizationService.invokeCallBackUrl(
-                            message.callbackUrl,
-                            CallbackRequestBody(
-                                message.clientUUID.toString(),
-                                message.stationUUID.toString(),
-                                requestStatus.description
-                            )
+                        val requestBody = CallbackRequestBody(
+                            message.clientUUID.toString(),
+                            message.stationUUID.toString(),
+                            requestStatus.description
                         )
+                        var chargingSlotConfirmed = stationAuthorizationService
+                            .chargingSessionConfirmed(message.callbackUrl,requestBody)
                         log.info("Message successfully processed. Correlation Id: ${message.requestCorrelationId}")
+                        chargingSlotConfirmed.takeIf { it }?.let { stationAuthorizationService.sendPushNotification(requestBody) }
+                            ?: {
+                                log.warn("Charging request for the station denied. Driver id: ${requestBody.driverToken}, Station id: ${requestBody.stationId}")
+                            }
+                        
                         //TODO: Update DB that processed successfully
                         return@launch
                     } catch (exception: Exception) { //Catch errors

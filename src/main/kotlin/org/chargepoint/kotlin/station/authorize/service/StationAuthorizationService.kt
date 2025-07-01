@@ -9,5 +9,7 @@ interface StationAuthorizationService {
 
     fun isEligibleToChargeAtStation(message : ServiceRequestContext) : Boolean
 
-    suspend fun invokeCallBackUrl(url : String,callbackReqBody : CallbackRequestBody)
+    suspend fun chargingSessionConfirmed(url : String,callbackReqBody : CallbackRequestBody) : Boolean
+    
+    suspend fun sendPushNotification(request:CallbackRequestBody)
 }

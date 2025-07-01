@@ -29,8 +29,8 @@ class StationAuthorizationServiceImpl(
         log.info("Starting to process message from the topic. Message Id: ${message.requestCorrelationId}")
     }
 
-    override suspend fun invokeCallBackUrl(url : String,callbackReqBody : CallbackRequestBody){
-        val response: Boolean = webClient
+    override suspend fun chargingSessionConfirmed(url : String,callbackReqBody : CallbackRequestBody) : Boolean{
+        val successResponse: Boolean = webClient
             .post()
             .uri(url)
             .contentType(MediaType.APPLICATION_JSON)
@@ -49,6 +49,14 @@ class StationAuthorizationServiceImpl(
                     return@awaitExchange false
                 }
             }
+        
+        return successResponse
+    }
+
+    override suspend fun sendPushNotification(request: CallbackRequestBody) {
+        //TODO: At system start - Initialize firebase app(1 time)
+        //TODO: send push notification
+        log.info("Push notification sent to firebase. Driver id: ${request.driverToken}, Station id: ${request.stationId}")
     }
 
     override fun isEligibleToChargeAtStation(message : ServiceRequestContext) : Boolean{
