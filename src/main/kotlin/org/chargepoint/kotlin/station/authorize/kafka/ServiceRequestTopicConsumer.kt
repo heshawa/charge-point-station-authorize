@@ -6,6 +6,7 @@ import org.chargepoint.kotlin.station.authorize.dto.ChargingApprovalStatus
 import org.chargepoint.kotlin.station.authorize.dto.RequestStatus
 import org.chargepoint.kotlin.station.authorize.dto.ServiceRequestContext
 import org.chargepoint.kotlin.station.authorize.service.StationAuthorizationService
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.annotation.KafkaListener
@@ -23,7 +24,7 @@ class ServiceRequestTopicConsumer(
     val consumerGroupId : String
 ) {
     val safetyAttemptCount = 10
-    var log = LoggerFactory.getLogger(ServiceRequestTopicConsumer::class.java)
+    val log: Logger = LoggerFactory.getLogger(ServiceRequestTopicConsumer::class.java)
 
     @KafkaListener(topics = ["#{__listener.consumerTopicName}"], groupId = "#{__listener.consumerGroupId}")
     suspend fun readTopicMessages(message : ServiceRequestContext){
