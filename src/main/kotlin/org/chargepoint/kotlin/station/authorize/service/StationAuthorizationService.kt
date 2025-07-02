@@ -5,8 +5,6 @@ import org.chargepoint.kotlin.station.authorize.dto.CallbackRequestBody
 import org.chargepoint.kotlin.station.authorize.dto.ServiceRequestContext
 
 interface StationAuthorizationService {
-    fun processMessagesFromKafka(message:ServiceRequestContext)
-
     fun isEligibleToChargeAtStation(message : ServiceRequestContext) : Boolean
 
     suspend fun chargingSessionConfirmed(url : String,callbackReqBody : CallbackRequestBody) : Boolean
