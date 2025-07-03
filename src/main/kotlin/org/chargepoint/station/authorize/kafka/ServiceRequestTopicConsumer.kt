@@ -10,6 +10,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.kafka.support.Acknowledgment
 import org.springframework.stereotype.Component
 import kotlin.time.Duration
 
@@ -27,9 +28,9 @@ class ServiceRequestTopicConsumer(
     val log: Logger = LoggerFactory.getLogger(ServiceRequestTopicConsumer::class.java)
 
     @KafkaListener(topics = ["#{__listener.consumerTopicName}"], groupId = "#{__listener.consumerGroupId}")
-    suspend fun readTopicMessages(message : ServiceRequestContext){
+    suspend fun readTopicMessages(message : ServiceRequestContext, ack: Acknowledgment){
         log.info("Message received from topic. Message Id: ${message.requestCorrelationId}")
-        //TODO: Send acknowledgement
+        ack.acknowledge()
 
         try {
             //TODO: Update received message in DB
