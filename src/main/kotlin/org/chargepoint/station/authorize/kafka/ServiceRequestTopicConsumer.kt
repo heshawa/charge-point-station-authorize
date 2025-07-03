@@ -66,6 +66,15 @@ class ServiceRequestTopicConsumer(
                         return@launch
                     } catch (exception: Exception) { //Catch errors
                         lastException = exception;
+                        //Send request to callback url when processing complete
+                        val requestBody = CallbackRequestBody(
+                            message.clientUUID.toString(),
+                            message.stationUUID.toString(),
+                            RequestStatus.UNKNOWN.value
+                        )
+                        stationAuthorizationService
+                            .chargingSessionConfirmed(message.callbackUrl,requestBody)
+
 
                         // Check if we should retry
                         if (!retryStrategy.shouldRetry(message.lastRetryAttempt, exception)) {
