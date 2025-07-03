@@ -1,6 +1,7 @@
 package org.chargepoint.station.authorize.service
 
 import org.chargepoint.station.authorize.database.entity.ChargingStation
+import org.chargepoint.station.authorize.database.entity.ClientStationAccessibility
 import org.chargepoint.station.authorize.database.entity.EvClient
 import org.chargepoint.station.authorize.database.repository.ChargingStationRepository
 import org.chargepoint.station.authorize.database.repository.ClientRepository
@@ -15,18 +16,17 @@ class StationACLServiceImpl(
     private val clientStationAccessibilityRepository: ClientStationAccessibilityRepository
 ) : StationACLService {
     override fun isAllowClient(clientId: UUID, stationId: UUID): Boolean {
-        //TODO: Not yet implemented
-        val evClient : EvClient = clientRepository.findById(clientId).orElse(null)
-        evClient.takeIf { it == null }?.let { return false }
+        val evClient : EvClient = clientRepository.findById(clientId).orElse(null) ?: return false
 
-        val chargingStation : ChargingStation = chargingStationRepository.findById(stationId).orElse(null)
-        chargingStation.takeIf { it == null }?.let { return false }
+        val chargingStation : ChargingStation = chargingStationRepository.findById(stationId).orElse(null) ?: return false
         
-        val clientCategory : Char = evClient.clientSubscriptionCategory!!
+        val clientCategory : Char = evClient?.clientSubscriptionCategory!!
         val stationType : Int = chargingStation.stationType!!
 
-        val clientAccessibility = clientStationAccessibilityRepository.findByClientCategoryAndStationType(clientCategory, stationType)
+        clientStationAccessibilityRepository.findByClientCategoryAndStationType(
+                clientCategory, stationType
+            ).orElse(null) ?: return false
         
-        return clientAccessibility.takeIf { it == null }?.let { return false } ?: return true
+        return true
     }
 }
