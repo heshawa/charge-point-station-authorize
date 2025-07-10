@@ -15,18 +15,24 @@ class StationACLServiceImpl(
     private val chargingStationRepository: ChargingStationRepository,
     private val clientStationAccessibilityRepository: ClientStationAccessibilityRepository
 ) : StationACLService {
-    override fun isAllowClient(clientId: UUID, stationId: UUID): Boolean {
+    override fun isAllowClientBacked(clientId: UUID, stationId: UUID): Boolean {
         val evClient : EvClient = clientRepository.findById(clientId).orElse(null) ?: return false
 
         val chargingStation : ChargingStation = chargingStationRepository.findById(stationId).orElse(null) ?: return false
-        
+
         val clientCategory : Char = evClient?.clientSubscriptionCategory!!
         val stationType : Int = chargingStation.stationType!!
 
         clientStationAccessibilityRepository.findByClientCategoryAndStationType(
-                clientCategory, stationType
-            ).orElse(null) ?: return false
-        
+            clientCategory, stationType
+        ).orElse(null) ?: return false
+
+        return true
+    }
+
+    override fun isAllowClient(clientId: UUID, stationId: UUID): Boolean {
+
+        clientStationAccessibilityRepository.getClientStationAccessibility(clientId, stationId).orElse(null) ?: return false
         return true
     }
 }

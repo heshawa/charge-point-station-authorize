@@ -61,7 +61,7 @@ class StationAuthorizationServiceImpl(
                 return false
             }
 
-            log.info("Message processed successfully for client: ${message.clientUUID}")
+            log.warn("Client ${message.clientUUID} is allowed to use station ${message.stationUUID}")
             true
 
         } catch (exception: Exception) {
